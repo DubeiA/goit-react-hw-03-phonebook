@@ -1,114 +1,95 @@
-import React, { Component } from 'react'
-import { ContactForm } from "./ContactForm/ContactForm";
-import { Filter } from './Filter/Filter'
-import { ContactList } from "./ContactList/ContactList";
-import { nanoid } from 'nanoid'
+import React, { Component } from 'react';
+import { ContactForm } from './ContactForm/ContactForm';
+import { Filter } from './Filter/Filter';
+import { ContactList } from './ContactList/ContactList';
+import { nanoid } from 'nanoid';
 // import PropTypes from 'prop-types'
 
-export class App extends Component { 
-
+export class App extends Component {
   state = {
-  contacts: [],
+    contacts: [],
     filter: '',
-  
-  }
+  };
 
   componentDidMount = () => {
     const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts)
+    const parsedContacts = JSON.parse(contacts);
 
-    if (parsedContacts ) {
-      this.setState({ contacts: parsedContacts })
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
     }
-    
-  }
-  
+  };
 
   componentDidUpdate = (prevProps, prevState) => {
-     if (this.state.contacts !== prevState.contacts) {
-       localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
-     }
-  }
-  
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  };
 
-  alertName = () => { 
-    
-   return this.state.contacts.map(contact => contact.name)
+  alertName = () => {
+    return this.state.contacts.map(contact => contact.name);
+  };
 
-   
-  }
+  alertNumber = () => {
+    return this.state.contacts.map(contact => contact.number);
+  };
 
-  alertNumber = () => { 
-    return this.state.contacts.map(contact => contact.number)
-  }
-
-  deleteContacts = contactsID => { 
+  deleteContacts = contactsID => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactsID)
-    }))
-  }
-  
-  filterOnChange = event => { 
-    this.setState({filter: event.currentTarget.value})
-  }
+      contacts: prevState.contacts.filter(contact => contact.id !== contactsID),
+    }));
+  };
+
+  filterOnChange = event => {
+    this.setState({ filter: event.currentTarget.value });
+  };
 
   formSubmitHandler = data => {
-   
     if (this.alertName().includes(data.name)) {
-     
-      alert(`${data.name} is already in your contact`)
-      return
+      alert(`${data.name} is already in your contact`);
+      return;
     }
 
     if (this.alertNumber().includes(data.number)) {
-      alert(`Number ${data.number} is already in your contact`)
-      return
+      alert(`Number ${data.number} is already in your contact`);
+      return;
     }
-    
+
     const addContacts = {
       id: nanoid(),
       name: data.name,
-      number: data.number
-    }
+      number: data.number,
+    };
 
     this.setState(prevState => ({
       contacts: [addContacts, ...prevState.contacts],
-    }))
-   
-  }
-  
-  render() {
+    }));
+  };
 
-    const {filter, contacts} = this.state
+  render() {
+    const { filter, contacts } = this.state;
 
     const normalizedFilter = filter.toLowerCase();
 
-    const visibleName = contacts.filter(contact => 
-      contact.name.toLowerCase().includes(normalizedFilter))
-
+    const visibleName = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
 
     return (
-      <div
-       style={{
-        
-        marginLeft: '40px',
-         width:'400px',
-        fontSize: 24,
-        color: '#010101'
-        }}>
-        
-
+      <div>
         <h2>Phonebook</h2>
 
-       <ContactForm onSubmit={this.formSubmitHandler}></ContactForm>
+        <ContactForm onSubmit={this.formSubmitHandler}></ContactForm>
 
         <h3>Contacts</h3>
 
         <Filter value={filter} onChange={this.filterOnChange} />
 
-        <ContactList contacts={visibleName} onDeleteContact={ this.deleteContacts} />
-        
+        <ContactList
+          contacts={visibleName}
+          onDeleteContact={this.deleteContacts}
+        />
       </div>
-    )
+    );
   }
 }
